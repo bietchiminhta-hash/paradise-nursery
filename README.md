@@ -1,0 +1,1 @@
+# Paradise Nursery Paradise Nursery is a shopping cart web application for an online plant shop. Users can browse houseplants organized by category, view plant details such as images, names, descriptions, and prices, add items to a shopping cart, and manage cart quantities
