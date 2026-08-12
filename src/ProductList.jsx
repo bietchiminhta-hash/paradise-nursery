@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addItem } from './CartSlice';
+import CartItem from './CartItem';
 import './ProductList.css';
 
 const plantsData = [
@@ -35,48 +36,52 @@ function ProductList({ onHomeClick }) {
 
   const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  const isInCart = (plantName) => {
+    return cartItems.some((item) => item.name === plantName);
+  };
+
   const handleAddToCart = (plant) => {
     dispatch(addItem(plant));
+  };
+
+  const handleContinueShopping = () => {
+    setShowCart(false);
   };
 
   return (
     <div className="product-list-container">
       <header className="product-header">
-        <h1 onClick={onHomeClick} style={{ cursor: 'pointer' }}>Paradise Nursery</h1>
-        <div className="cart-icon" onClick={() => setShowCart(!showCart)}>
+        <h1 onClick={onHomeClick} style={{ cursor: 'pointer' }}>
+          Paradise Nursery
+        </h1>
+        <div className="cart-icon" onClick={() => setShowCart(true)}>
           🛒 Cart ({totalQuantity})
         </div>
       </header>
 
       {showCart ? (
-        <div className="cart-view">
-          <h2>Your Cart</h2>
-          {cartItems.length === 0 ? (
-            <p>Your cart is empty.</p>
-          ) : (
-            <ul>
-              {cartItems.map((item) => (
-                <li key={item.name}>
-                  {item.name} — {item.quantity} x {item.cost}
-                </li>
-              ))}
-            </ul>
-          )}
-          <button onClick={() => setShowCart(false)}>Continue Shopping</button>
-        </div>
+        <CartItem onContinueShopping={handleContinueShopping} />
       ) : (
         plantsData.map((category) => (
           <div key={category.category} className="category-section">
             <h2>{category.category}</h2>
             <div className="product-grid">
-              {category.plants.map((plant) => (
-                <div key={plant.name} className="product-card">
-                  <img src={plant.image} alt={plant.name} className="product-image" />
-                  <h3>{plant.name}</h3>
-                  <p>{plant.cost}</p>
-                  <button onClick={() => handleAddToCart(plant)}>Add to Cart</button>
-                </div>
-              ))}
+              {category.plants.map((plant) => {
+                const added = isInCart(plant.name);
+                return (
+                  <div key={plant.name} className="product-card">
+                    <img src={plant.image} alt={plant.name} className="product-image" />
+                    <h3>{plant.name}</h3>
+                    <p>{plant.cost}</p>
+                    <button
+                      className={added ? 'added-to-cart-button' : 'add-to-cart-button'}
+                      onClick={() => handleAddToCart(plant)}
+                    >
+                      {added ? 'Added to Cart' : 'Add to Cart'}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))
